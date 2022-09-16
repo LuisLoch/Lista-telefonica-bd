@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
                 nome.setText(contato.getNome());
                 telefone.setText(contato.getTelefone());
                 dataNasc.setText(contato.getDataNasc());
+                contatoDB.atualizar(lista);
             }
         });
 
@@ -73,12 +74,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 new AlertDialog.Builder(view.getContext())
-                        .setMessage("Deseja remover o contato?")
+                        .setMessage("Deseja remover este contato?")
                         .setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int j) {
                                 contatoDB.remover(dados.get(i).getId());
                                 contatoDB.listar(dados);
+                                contatoDB.atualizar(lista);
                             }
                         })
                         .setNegativeButton("Cancelar", null)
@@ -113,9 +115,10 @@ public class MainActivity extends AppCompatActivity {
 
     //função para limpar os campos de entrada de dados caso seja pressionado o botão voltar
     private void limparCampos(){
-        nome.setText(null);//pode dar erro por ser null, substituir por: ""
-        telefone.setText(null);
-        dataNasc.setText(null);
+        nome.setText("");//pode dar erro por ser null, substituir por: ""
+        telefone.setText("");
+        dataNasc.setText("");
+        Toast.makeText(this, "Edição cancelada!", Toast.LENGTH_SHORT).show();
     }
 
     //função para limpar os campos de dados na edição, caso o botão de voltar seja pressionado

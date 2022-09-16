@@ -25,10 +25,11 @@ public class ContatoDB {
         valores.put("telefone", contato.getTelefone());
         valores.put("dataNasc", contato.getDataNasc());
 
+        //ERRO DENTRO DESSA CONDIÇÃO-----------------------------------------------------------------------------------------------------------------------
         //Se o contato a ser inserido possuir id maior que zero, ou seja, já existir, atualiza o contato. Se não insere um novo contato
-        if(contato.getId()>0)
-            conexao.update("telefones", valores, "id=?", new String[]{contato.getId().toString()});
-        else
+        //if(contato.getId()>0)
+            //conexao.update("telefones", valores, "id=?", new String[]{contato.getId().toString()});
+        //else
             conexao.insertOrThrow("telefones", null, valores);
         conexao.close();
     }
@@ -40,7 +41,10 @@ public class ContatoDB {
     }
 
     //Método para atualizar a lista passada como parâmetro
-    public void atualizar(ListView lista){ ((ArrayAdapter) lista.getAdapter()).notifyDataSetChanged(); }
+    public void atualizar(ListView lista){
+        //((ArrayAdapter) lista.getAdapter()).notifyDataSetChanged(); //Método que não está funcionando, resolver porteriormente
+        lista.invalidateViews();
+    }
 
     //Método para listar os dados dentro da ListView da interface principal
     public void listar(List dados){
