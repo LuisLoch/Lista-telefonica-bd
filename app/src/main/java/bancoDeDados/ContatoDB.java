@@ -18,18 +18,18 @@ public class ContatoDB {
     public ContatoDB(DBHelper db){ this.db = db; }
 
     //Método inserir, para adicionar um novo contato ou editar um já existente selecionado na lista da interface principal
-    public void inserir(Contato contato){
+    public void inserir(Contato contato, boolean editarCancelado){
         conexao = db.getWritableDatabase();
         ContentValues valores = new ContentValues();
         valores.put("nome", contato.getNome());
         valores.put("telefone", contato.getTelefone());
         valores.put("dataNasc", contato.getDataNasc());
 
-        //ERRO DENTRO DESSA CONDIÇÃO-----------------------------------------------------------------------------------------------------------------------
         //Se o contato a ser inserido possuir id maior que zero, ou seja, já existir, atualiza o contato. Se não insere um novo contato
-        //if(contato.getId()>0)
-            //conexao.update("telefones", valores, "id=?", new String[]{contato.getId().toString()});
-        //else
+        if(editarCancelado==false && contato.getId()!=null){
+            conexao.update("telefones", valores, "id=?", new String[]{contato.getId().toString()});
+        }
+        else
             conexao.insertOrThrow("telefones", null, valores);
         conexao.close();
     }
@@ -42,8 +42,8 @@ public class ContatoDB {
 
     //Método para atualizar a lista passada como parâmetro
     public void atualizar(ListView lista){
-        //((ArrayAdapter) lista.getAdapter()).notifyDataSetChanged(); //Método que não está funcionando, resolver porteriormente
-        lista.invalidateViews();
+        ((ArrayAdapter) lista.getAdapter()).notifyDataSetChanged(); //Método que não está funcionando, resolver porteriormente
+        //lista.invalidateViews();
     }
 
     //Método para listar os dados dentro da ListView da interface principal
@@ -51,7 +51,7 @@ public class ContatoDB {
         dados.clear();
         conexao = db.getReadableDatabase();
         String names[] = {"id", "nome", "telefone", "dataNasc"};
-        Cursor query = conexao.query("telefones", names, null, null, null, null, "id");
+        Cursor query = conexao.query("telefones", names, null, null, null, null, "id");//consulta ordenada por id de cada linha
 
         while (query.moveToNext()){
             Contato contato = new Contato();

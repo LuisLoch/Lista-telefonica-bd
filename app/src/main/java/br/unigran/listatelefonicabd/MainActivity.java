@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
     DBHelper db;
     ContatoDB contatoDB;
     Contato contato;
+    boolean editarCancelado = false; //variável que garante que o editar não seja efetuado depois do usuário clicar o botão de voltar para cancelar edição
+    boolean longClickAtivo = false; //variável que garante que o onItemLongClick e onItemClick não sejam ativados ao mesmo tempo
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,11 +63,14 @@ public class MainActivity extends AppCompatActivity {
         lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                contato = dados.get(i);
-                nome.setText(contato.getNome());
-                telefone.setText(contato.getTelefone());
-                dataNasc.setText(contato.getDataNasc());
-                contatoDB.atualizar(lista);
+                if(!longClickAtivo){
+                    editarCancelado = false; //caso o usuário clique no item da lista, editar cancelado se torna false, permitindo a edição do contato clicado
+                    contato = dados.get(i);
+                    nome.setText(contato.getNome());
+                    telefone.setText(contato.getTelefone());
+                    dataNasc.setText(contato.getDataNasc());
+                    contatoDB.atualizar(lista);
+                }
             }
         });
 
@@ -73,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
         lista.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                longClickAtivo = true;
                 new AlertDialog.Builder(view.getContext())
                         .setMessage("Deseja remover este contato?")
                         .setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
@@ -81,9 +87,16 @@ public class MainActivity extends AppCompatActivity {
                                 contatoDB.remover(dados.get(i).getId());
                                 contatoDB.listar(dados);
                                 contatoDB.atualizar(lista);
+                                longClickAtivo = false;
+                                Toast.makeText(getApplicationContext(), "Contato removido!", Toast.LENGTH_SHORT).show();
                             }
                         })
-                        .setNegativeButton("Cancelar", null)
+                        .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                longClickAtivo = false;
+                            }
+                        })
                         .create().show();
                 return false;
             }
@@ -101,7 +114,10 @@ public class MainActivity extends AppCompatActivity {
         contato.setDataNasc(dataNasc.getText().toString());
 
         //insere e salva o contato no banco de dados do contato
-        contatoDB.inserir(contato);
+        contatoDB.inserir(contato, editarCancelado);
+
+        //apresenta lista após inserção de dados
+        contatoDB.listar(dados);
 
         //atualiza lista
         contatoDB.atualizar(lista);//pode dar erro, pois foi alterado o método atualizar()
@@ -109,22 +125,25 @@ public class MainActivity extends AppCompatActivity {
         //limpa os dados de contato
         contato = null;
 
+        //limpa os campos de entrada de dados
+        limparCampos();
+
         //texto de aviso de que contato foi salvo
         Toast.makeText(this, "Contato salvo com sucesso!", Toast.LENGTH_SHORT).show();
     }
 
     //função para limpar os campos de entrada de dados caso seja pressionado o botão voltar
     private void limparCampos(){
-        nome.setText("");//pode dar erro por ser null, substituir por: ""
-        telefone.setText("");
-        dataNasc.setText("");
-        Toast.makeText(this, "Edição cancelada!", Toast.LENGTH_SHORT).show();
+        nome.setText(null);//pode dar erro por ser null, substituir por: ""
+        telefone.setText(null);
+        dataNasc.setText(null);
     }
 
     //função para limpar os campos de dados na edição, caso o botão de voltar seja pressionado
     @Override
     public void onBackPressed(){
-        super.onBackPressed();
+        editarCancelado = true; //caso o usuário clique no botão voltar, editar cancelado se torna true, bloqueando a edição co contato
         limparCampos();
+        Toast.makeText(this, "Edição cancelada!", Toast.LENGTH_SHORT).show();
     }
 }
