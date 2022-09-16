@@ -1,7 +1,5 @@
 package br.unigran.listatelefonicabd;
 
-import java.util.Date;
-
 public class Contato {
     private Integer id;
     private String nome;

@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Lista telefonica bd</string>
+    <string name="hintNome">Nome:</string>
+    <string name="hintTelefone">Telefone:</string>
+    <string name="hintDataNasc">Data de nasc:</string>
+    <string name="hintSalvar">Salvar</string>
 </resources>

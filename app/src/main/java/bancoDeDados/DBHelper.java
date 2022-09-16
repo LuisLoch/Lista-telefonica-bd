@@ -11,6 +11,7 @@ public class DBHelper extends SQLiteOpenHelper {
         super(context, "BancoTelefones", null, 1);
     }
 
+    //método onCreate para quando iniciar o aplicativo pela primeira vez, criar a tabela de telefones e os respectivos campos
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL("CREATE TABLE telefones(" +
@@ -20,6 +21,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "dataNasc VARCHAR(10))");
     }
 
+    //método onUpgrade, vazio
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) { }
 }
