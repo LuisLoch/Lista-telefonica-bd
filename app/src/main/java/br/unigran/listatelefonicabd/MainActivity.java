@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         dataNasc = findViewById(R.id.idDataNasc);
         lista = findViewById(R.id.idLista);
 
-        //alocação de lista
+        //alocação de lista vazia
         dados = new ArrayList();
 
         //criação e vinculamento de adapter de lista
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
 
     //função para limpar os campos de entrada de dados caso seja pressionado o botão voltar
     private void limparCampos(){
-        nome.setText(null);//pode dar erro por ser null, substituir por: ""
+        nome.setText(null);
         telefone.setText(null);
         dataNasc.setText(null);
     }
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
     //função para limpar os campos de dados na edição, caso o botão de voltar seja pressionado
     @Override
     public void onBackPressed(){
-        editarCancelado = true; //caso o usuário clique no botão voltar, editar cancelado se torna true, bloqueando a edição co contato
+        editarCancelado = true; //caso o usuário clique no botão voltar, editar cancelado se torna true, bloqueando a edição do contato selecionado previamente
         limparCampos();
         Toast.makeText(this, "Edição cancelada!", Toast.LENGTH_SHORT).show();
     }

@@ -31,6 +31,7 @@ public class ContatoDB {
         }
         else
             conexao.insertOrThrow("telefones", null, valores);
+
         conexao.close();
     }
 
@@ -42,8 +43,7 @@ public class ContatoDB {
 
     //Método para atualizar a lista passada como parâmetro
     public void atualizar(ListView lista){
-        ((ArrayAdapter) lista.getAdapter()).notifyDataSetChanged(); //Método que não está funcionando, resolver porteriormente
-        //lista.invalidateViews();
+        ((ArrayAdapter) lista.getAdapter()).notifyDataSetChanged(); //"notifica" o adapter da lista de que os dados estão desatualizados
     }
 
     //Método para listar os dados dentro da ListView da interface principal
