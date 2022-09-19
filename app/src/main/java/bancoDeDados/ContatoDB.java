@@ -5,8 +5,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.List;//possivel erro
+import java.util.Locale;
 
 import br.unigran.listatelefonicabd.Contato;
 
@@ -18,21 +21,33 @@ public class ContatoDB {
     public ContatoDB(DBHelper db){ this.db = db; }
 
     //Método inserir, para adicionar um novo contato ou editar um já existente selecionado na lista da interface principal
-    public void inserir(Contato contato, boolean editarCancelado){
+    public int inserir(Contato contato, boolean editarCancelado){
         conexao = db.getWritableDatabase();
-        ContentValues valores = new ContentValues();
-        valores.put("nome", contato.getNome());
-        valores.put("telefone", contato.getTelefone());
-        valores.put("dataNasc", contato.getDataNasc());
 
-        //Se o contato a ser inserido possuir id maior que zero, ou seja, já existir, atualiza o contato. Se não insere um novo contato
-        if(editarCancelado==false && contato.getId()!=null){
-            conexao.update("telefones", valores, "id=?", new String[]{contato.getId().toString()});
+        SimpleDateFormat formatoData = new SimpleDateFormat("dd-mm-yyyy", Locale.ENGLISH);
+
+        if(contato.getNome().isEmpty() || contato.getNome()==null || contato.getTelefone().isEmpty() || contato.getNome()==null)
+            return 1;
+        else{
+            if(comparaString(contato.getDataNasc())){
+                ContentValues valores = new ContentValues();
+                valores.put("nome", contato.getNome());
+                valores.put("telefone", contato.getTelefone());
+                valores.put("dataNasc", contato.getDataNasc());
+
+                //Se o contato a ser inserido possuir id maior que zero, ou seja, já existir, atualiza o contato. Se não insere um novo contato
+                if(editarCancelado == false && contato.getId() != null)
+                    conexao.update("telefones", valores, "id=?", new String[]{contato.getId().toString()});
+                else
+                    conexao.insertOrThrow("telefones", null, valores);
+
+                conexao.close();
+
+                return 0;
+            }else{
+                return 2;
+            }
         }
-        else
-            conexao.insertOrThrow("telefones", null, valores);
-
-        conexao.close();
     }
 
     //Método remover, para excluir um contato do banco de dados e depois atualizar a lista
@@ -63,5 +78,13 @@ public class ContatoDB {
         }
 
         conexao.close();
+    }
+
+    public boolean comparaString(String s){
+        String f[] = s.split("/");
+        if(Integer.parseInt(f[0])<=31 && Integer.parseInt(f[0])>=1 && Integer.parseInt(f[1])>=1 && Integer.parseInt(f[1])<=12 && Integer.parseInt(f[2])>=1900 && Integer.parseInt(f[2])<=2022)
+            return true;
+        else
+            return false;
     }
 }

@@ -23,5 +23,7 @@ public class Contato {
     public void setDataNasc(String dataNasc) { this.dataNasc = dataNasc; }
 
     @Override
-    public String toString() { return nome; }
+    public String toString() {
+        return nome + " " + telefone + " " + dataNasc;
+    }
 }

@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
 
         contatoDB = new ContatoDB(db);
 
+        limparCampos();
+
         //listagem inicial
         contatoDB.listar(dados);
 
@@ -114,22 +116,32 @@ public class MainActivity extends AppCompatActivity {
         contato.setDataNasc(dataNasc.getText().toString());
 
         //insere e salva o contato no banco de dados do contato
-        contatoDB.inserir(contato, editarCancelado);
+        switch (contatoDB.inserir(contato, editarCancelado)){
+            case 0:
+                //apresenta lista após inserção de dados
+                contatoDB.listar(dados);
 
-        //apresenta lista após inserção de dados
-        contatoDB.listar(dados);
+                //atualiza lista
+                contatoDB.atualizar(lista);//pode dar erro, pois foi alterado o método atualizar()
 
-        //atualiza lista
-        contatoDB.atualizar(lista);//pode dar erro, pois foi alterado o método atualizar()
+                //limpa os dados de contato
+                contato = null;
 
-        //limpa os dados de contato
-        contato = null;
+                //limpa os campos de entrada de dados
+                limparCampos();
 
-        //limpa os campos de entrada de dados
-        limparCampos();
-
-        //texto de aviso de que contato foi salvo
-        Toast.makeText(this, "Contato salvo com sucesso!", Toast.LENGTH_SHORT).show();
+                //texto de aviso de que contato foi salvo
+                Toast.makeText(getApplicationContext(), "Contato salvo com sucesso!", Toast.LENGTH_SHORT).show();
+                break;
+            case 1:
+                Toast.makeText(getApplicationContext(), "Contato inválido. Deve possuir os campos de nome e telefone obrigatoriamente!", Toast.LENGTH_SHORT).show();
+                break;
+            case 2:
+                Toast.makeText(getApplicationContext(), "Formato de data inválido ou fora do período permitido!", Toast.LENGTH_SHORT).show();
+                break;
+            default:
+                Toast.makeText(getApplicationContext(), "Algo deu errado!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     //função para limpar os campos de entrada de dados caso seja pressionado o botão voltar
@@ -144,6 +156,6 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed(){
         editarCancelado = true; //caso o usuário clique no botão voltar, editar cancelado se torna true, bloqueando a edição do contato selecionado previamente
         limparCampos();
-        Toast.makeText(this, "Edição cancelada!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Edição cancelada!", Toast.LENGTH_SHORT).show();
     }
 }
